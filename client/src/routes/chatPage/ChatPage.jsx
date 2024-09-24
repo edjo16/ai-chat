@@ -1,30 +1,26 @@
-import React, { useEffect, useRef } from 'react'
 import "./chatPage.css";
-import NewPrompt from '../../components/newPrompt/NewPrompt';
-const ChatPage =()=>  {
-  const endRef = useRef(null)
+import NewPrompt from "../../components/newPrompt/NewPrompt";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
+import Markdown from "react-markdown";
+import { IKImage } from "imagekitio-react";
 
-  useEffect(()=>{
-    endRef.current.scrollIntoView({behavior:"smooth"})
-  },[])
-    return (
-      <div className="chatPage">
+const ChatPage = () => {
+  const path = useLocation().pathname;
+  const chatId = path.split("/").pop();
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["chat", chatId],
+    queryFn: () =>
+      fetch(`${import.meta.env.VITE_API_URL}/api/chats/${chatId}`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+  });
+
+  return (
+    <div className="chatPage">
       <div className="wrapper">
         <div className="chat">
-        <div className="message user">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam totam, sit ipsum fuga quas illo cupiditate placeat doloremque qui dolorem sapiente eius magni corporis repellat officia, nesciunt optio provident eveniet!</div>
-        <div className="message">message form ai</div>
-        <div className="message user">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam totam, sit ipsum fuga quas illo cupiditate placeat doloremque qui dolorem sapiente eius magni corporis repellat officia, nesciunt optio provident eveniet!</div>
-        <div className="message">message form ai</div>
-        <div className="message user">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam totam, sit ipsum fuga quas illo cupiditate placeat doloremque qui dolorem sapiente eius magni corporis repellat officia, nesciunt optio provident eveniet!</div>
-        <div className="message">message form ai</div>
-        <div className="message">message form ai</div>
-        <div className="message user">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam totam, sit ipsum fuga quas illo cupiditate placeat doloremque qui dolorem sapiente eius magni corporis repellat officia, nesciunt optio provident eveniet!</div>
-        <div className="message">message form ai</div>
-        <div className="message user">Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam totam, sit ipsum fuga quas illo cupiditate placeat doloremque qui dolorem sapiente eius magni corporis repellat officia, nesciunt optio provident eveniet!</div>
-        <NewPrompt/>
-        <div ref={endRef}></div>
-      </div>
-        {/* <div className="chat">
           {isPending
             ? "Loading..."
             : error
@@ -54,11 +50,10 @@ const ChatPage =()=>  {
               ))}
 
           {data && <NewPrompt data={data}/>}
-        </div> */}
+        </div>
       </div>
     </div>
-    )
-  
-}
+  );
+};
 
 export default ChatPage;
