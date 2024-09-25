@@ -8,15 +8,16 @@ const DashboardPage = () => {
   const navigate = useNavigate();
 
   const mutation = useMutation({
-    mutationFn: (text) => {
-      return fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
+    mutationFn: async (text) => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ text }),
-      }).then((res) => res.json());
+      });
+      return await res.json();
     },
     onSuccess: (id) => {
       // Invalidate and refetch

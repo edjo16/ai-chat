@@ -108,6 +108,7 @@ app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
 });
 
 app.get("/api/chats/:id", ClerkExpressRequireAuth(), async (req, res) => {
+  console.log(req.auth)
   const userId = req.auth.userId;
 
   try {

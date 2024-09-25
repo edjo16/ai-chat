@@ -15,14 +15,12 @@ const NewPrompt = ({ data }) => {
     dbData: {},
     aiData: {},
   });
-
+  const chatHistory = data?.history.map(({ role, parts }) => ({
+    role,
+    parts: parts.length > 0 ? [{ text: parts[0].text }] : [{ text: "" }]
+  }));
   const chat = model.startChat({
-    history: [
-      data?.history.map(({ role, parts }) => ({
-        role,
-        parts: [{ text: parts[0].text }],
-      })),
-    ],
+    history: chatHistory || [],
     generationConfig: {
       // maxOutputTokens: 100,
     },
@@ -38,8 +36,8 @@ const NewPrompt = ({ data }) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => {
-      return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
+    mutationFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -50,7 +48,8 @@ const NewPrompt = ({ data }) => {
           answer,
           img: img.dbData?.filePath || undefined,
         }),
-      }).then((res) => res.json());
+      });
+      return await res.json();
     },
     onSuccess: () => {
       queryClient
@@ -99,7 +98,7 @@ const NewPrompt = ({ data }) => {
     const text = e.target.text.value;
     if (!text) return;
 
-    // add(text, false);
+    add(text, false);
   };
 
   // IN PRODUCTION WE DON'T NEED IT
